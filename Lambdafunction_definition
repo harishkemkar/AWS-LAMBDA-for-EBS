@@ -1,0 +1,23 @@
+import boto3
+
+# Sample Arn  -   "arn:aws:ec2:ap-south-1:445842911672:volume/vol-08d57da90b38415de"
+def get_volume_id_from_arm(volume_arn):
+    #split the ARN using colon seprator (:)
+    arn_parts = volume_arn.split(':')
+    # volume id is the prt of ARN
+    volume_id = arn_parts[-1].split('/')[-1] 
+    return volume_id
+
+def lambda_handler(event, context):
+    
+    print(event)
+    volume_arn = event['resources'][0]
+    volume_id = get_volume_id_from_arm(volume_arn)
+    ec2_client = boto3.client('ec2')    
+    
+    
+    response = ec2_client.modify_volume(
+    VolumeId=volume_id,
+    VolumeType='gp2',
+    Size=200
+    )
